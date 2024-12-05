@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import ProjectUser, Topic, Room, Message
+from .models import User, Topic, Room, Message
 
-@admin.register(ProjectUser)
+@admin.register(User)
 class ProjectUserAdmin(admin.ModelAdmin):
     list_display = ('email', 'username', 'name', 'is_staff', 'is_active', 'date_joined')
     search_fields = ('email', 'username', 'name')

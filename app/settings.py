@@ -130,8 +130,13 @@ INTERNAL_IPS = [ "127.0.0.1", ]
 
 STATIC_URL = 'static/'
 
+MEDIA_URL = 'media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'core.ProjectUser'
+
+AUTH_USER_MODEL = 'core.User'
