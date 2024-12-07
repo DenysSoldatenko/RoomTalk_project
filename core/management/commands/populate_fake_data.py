@@ -8,9 +8,10 @@ from core.models import User, Topic, Room, Message
 from PIL import Image
 from io import BytesIO
 import requests
+from django.utils.text import slugify
 
 class Command(BaseCommand):
-    help = "Generate fake data for ProjectUser, Topic, Room, and Message models"
+    help = "Generate fake data for User, Topic, Room, and Message models"
 
     def handle(self, *args, **kwargs):
         fake = Faker()
@@ -19,15 +20,17 @@ class Command(BaseCommand):
         topics = []
         for _ in range(5):
             topic_name = fake.word().capitalize()
+            topic_slug = slugify(topic_name)  # Generate slug for the topic
+
             try:
-                topic = Topic.objects.create(name=topic_name)
+                topic = Topic.objects.create(name=topic_name, slug=topic_slug)
                 topics.append(topic)
                 self.stdout.write(self.style.SUCCESS(f'Successfully created topic: {topic.name}'))
             except IntegrityError:
                 self.stdout.write(self.style.WARNING(f'Topic name "{topic_name}" already exists. Skipping this topic.'))
                 continue
 
-        # Create fake ProjectUsers (custom user model)
+        # Create fake Users (custom user model)
         users = []
         for _ in range(10):
             name = fake.name()
@@ -79,11 +82,14 @@ class Command(BaseCommand):
             room_host = random.choice(users)  # Randomly assign a user as host
             room_topic = random.choice(topics)  # Randomly assign a topic
 
+            room_slug = slugify(room_name)  # Generate slug for the room
+
             room = Room.objects.create(
                 name=room_name,
                 description=room_description,
                 host=room_host,
-                topic=room_topic
+                topic=room_topic,
+                slug=room_slug
             )
 
             # Add random users to the room as participants

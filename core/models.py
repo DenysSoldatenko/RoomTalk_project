@@ -17,6 +17,7 @@ class User(AbstractUser):
 
 class Topic(models.Model):
     name = models.CharField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, verbose_name='URL')
 
     class Meta:
         verbose_name = 'Topic'
@@ -30,6 +31,7 @@ class Room(models.Model):
     host = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, verbose_name='URL')
     description = models.TextField(null=True, blank=True)
     participants = models.ManyToManyField(User, related_name='rooms', blank=True)
     updated = models.DateTimeField(auto_now=True)
