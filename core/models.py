@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from django.utils.text import slugify
 
 class User(AbstractUser):
     name = models.CharField(max_length=200, null=True, blank=True)
@@ -23,6 +23,11 @@ class Topic(models.Model):
         verbose_name = 'Topic'
         verbose_name_plural = 'Topics'
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)  # Auto-generate slug if not provided
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -41,6 +46,11 @@ class Room(models.Model):
         ordering = ['-updated', '-created']
         verbose_name = 'Room'
         verbose_name_plural = 'Rooms'
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)  # Auto-generate slug if not provided
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

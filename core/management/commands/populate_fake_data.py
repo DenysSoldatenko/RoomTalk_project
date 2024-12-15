@@ -1,14 +1,16 @@
 import os
 import random
+from io import BytesIO
+
+import requests
+from PIL import Image
+from django.core.files.base import ContentFile
 from django.core.management import BaseCommand
 from django.db import IntegrityError
 from faker import Faker
-from django.core.files.base import ContentFile
+
 from core.models import User, Topic, Room, Message
-from PIL import Image
-from io import BytesIO
-import requests
-from django.utils.text import slugify
+
 
 class Command(BaseCommand):
     help = "Generate fake data for User, Topic, Room, and Message models"
@@ -20,10 +22,9 @@ class Command(BaseCommand):
         topics = []
         for _ in range(5):
             topic_name = fake.word().capitalize()
-            topic_slug = slugify(topic_name)  # Generate slug for the topic
 
             try:
-                topic = Topic.objects.create(name=topic_name, slug=topic_slug)
+                topic = Topic.objects.create(name=topic_name)
                 topics.append(topic)
                 self.stdout.write(self.style.SUCCESS(f'Successfully created topic: {topic.name}'))
             except IntegrityError:
@@ -78,18 +79,20 @@ class Command(BaseCommand):
         rooms = []
         for _ in range(15):
             room_name = fake.word().capitalize()
+
+            # Check if room name already exists
+            while Room.objects.filter(name=room_name).exists():
+                room_name = fake.word().capitalize()  # Generate a new name if the name already exists
+
             room_description = fake.text()
             room_host = random.choice(users)  # Randomly assign a user as host
             room_topic = random.choice(topics)  # Randomly assign a topic
-
-            room_slug = slugify(room_name)  # Generate slug for the room
 
             room = Room.objects.create(
                 name=room_name,
                 description=room_description,
                 host=room_host,
-                topic=room_topic,
-                slug=room_slug
+                topic=room_topic
             )
 
             # Add random users to the room as participants
@@ -105,7 +108,7 @@ class Command(BaseCommand):
             room = random.choice(rooms)  # Randomly pick a room
             user = random.choice(users)  # Randomly pick a user
 
-            message = Message.objects.create(
+            Message.objects.create(
                 user=user,
                 room=room,
                 body=message_body
