@@ -39,6 +39,7 @@ class Command(BaseCommand):
             username = fake.user_name()
             bio = fake.text()
             avatar_url = fake.image_url()
+            password = 'simple'
 
             # Fetch image
             try:
@@ -68,6 +69,10 @@ class Command(BaseCommand):
                         bio=bio,
                         avatar=avatar_content
                     )
+
+                    user.set_password(password)
+                    user.save()
+
                     users.append(user)
                     self.stdout.write(self.style.SUCCESS(f'Successfully created user: {user.username}'))
 
