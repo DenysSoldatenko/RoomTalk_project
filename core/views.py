@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, render
 
 from core.models import Room, Message, Topic
-from .forms import UserRegistrationForm
+from .forms import UserRegistrationForm, RoomForm
 
 
 def login_view(request):
@@ -25,9 +26,11 @@ def login_view(request):
 
     return render(request, 'core/page_auth.html', {'page': 'login'})
 
+
 def logout_user(request):
     logout(request)
     return redirect('home')
+
 
 def register_view(request):
     form = UserRegistrationForm()
@@ -61,6 +64,7 @@ def home_view(request):
 
     return render(request, 'core/page_home.html', context)
 
+
 def room_view(request, room_slug):
     room = get_object_or_404(Room.objects.select_related('topic'), slug=room_slug)
     room_messages = room.message_set.select_related('user').all()
@@ -82,20 +86,43 @@ def room_view(request, room_slug):
     }
     return render(request, 'core/page_room.html', context)
 
+
+@login_required(login_url='login')
 def create_room(request):
-    return None
+    form = RoomForm()
+    topics = Topic.objects.all()
+
+    if request.method == 'POST':
+        topic_name = request.POST.get('topic_name')
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description'),
+        )
+        return redirect('home')
+
+    context = {'form': form, 'topics': topics}
+    return render(request, 'core/page_room_create.html', context)
+
 
 def update_room(request):
     return None
 
+
 def delete_room(request):
     return None
+
 
 def delete_message(request):
     return None
 
+
 def user_profile(request):
     return None
+
 
 def update_user(request):
     return None
