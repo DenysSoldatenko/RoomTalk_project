@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, render
 
@@ -108,8 +109,26 @@ def create_room(request):
     return render(request, 'core/page_room_create.html', context)
 
 
-def update_room(request):
-    return None
+@login_required(login_url='login')
+def update_room(request, room_slug):
+    room = Room.objects.get(slug=room_slug)
+    form = RoomForm(instance=room)
+    topics = Topic.objects.all()
+
+    if request.user != room.host:
+        return HttpResponse('Your are not allowed here!!')
+
+    if request.method == 'POST':
+        topic_name = request.POST.get('topic_name')
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        room.name = request.POST.get('name')
+        room.topic = topic
+        room.description = request.POST.get('description')
+        room.save()
+        return redirect('home')
+
+    context = {'form': form, 'topics': topics, 'room': room}
+    return render(request, 'core/page_room_create.html', context)
 
 
 def delete_room(request):
