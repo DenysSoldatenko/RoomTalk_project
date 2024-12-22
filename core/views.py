@@ -131,8 +131,17 @@ def update_room(request, room_slug):
     return render(request, 'core/page_room_create.html', context)
 
 
-def delete_room(request):
-    return None
+@login_required(login_url='login')
+def delete_room(request, room_slug):
+    room = Room.objects.get(slug=room_slug)
+
+    if request.user != room.host:
+        return HttpResponse('Your are not allowed here!!')
+
+    if request.method == 'POST':
+        room.delete()
+        return redirect('home')
+    return render(request, 'core/component_delete.html', {'obj': room})
 
 
 def delete_message(request):
