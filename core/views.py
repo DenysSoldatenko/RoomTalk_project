@@ -144,8 +144,17 @@ def delete_room(request, room_slug):
     return render(request, 'core/component_delete.html', {'obj': room})
 
 
-def delete_message(request):
-    return None
+@login_required(login_url='login')
+def delete_message(request, pk):
+    message = Message.objects.get(id=pk)
+
+    if request.user != message.room.host:
+        return HttpResponse('Your are not allowed here!!')
+
+    if request.method == 'POST':
+        message.delete()
+        return redirect('room', room_slug=message.room.slug)
+    return render(request, 'core/component_delete.html', {'obj': message})
 
 
 def user_profile(request):
