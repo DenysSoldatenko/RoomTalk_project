@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, render
 
-from core.models import Room, Message, Topic
+from core.models import Room, Message, Topic, User
 from .forms import UserRegistrationForm, RoomForm
 
 
@@ -157,9 +157,16 @@ def delete_message(request, pk):
     return render(request, 'core/component_delete.html', {'obj': message})
 
 
-def user_profile(request):
-    return None
+@login_required(login_url='login')
+def user_profile(request, pk):
+    user = User.objects.get(id=pk)
+    rooms = user.room_set.all()
+    room_messages = user.message_set.all()
+    topics = Topic.objects.all()
+    context = {'user': user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics}
+    return render(request, 'core/page_user_profile.html', context)
 
 
+@login_required(login_url='login')
 def update_user(request):
     return None

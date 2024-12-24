@@ -3,7 +3,7 @@
 {% block content %}
     <main class="profile-page layout layout--3">
         <div class="container">
-            {% include 'core/topics_component.html' %}
+            {% include 'core/component_topics.html' %}
             <div class="roomList">
                 <div class="profile">
                     <div class="profile__avatar">
@@ -15,7 +15,7 @@
                         <h3>{{ user.name }}</h3>
                         <p>@{{ user.username }}</p>
                         {% if request.user == user %}
-                            <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
+                            <a href="{% url 'user-update' %}" class="btn btn--main btn--pill">Edit Profile</a>
                         {% endif %}
                     </div>
                     <div class="profile__about">
@@ -26,12 +26,12 @@
                     </div>
                 </div>
 
+                {% include 'core/component_feed.html' %}
                 <div class="roomList__header">
                     <div>
                         <h2>RoomTalk - Connecting Minds, Building Conversations</h2>
                     </div>
                 </div>
-                {% include 'core/component_feed.html' %}
             </div>
             {% include 'core/component_activity.html' %}
         </div>
