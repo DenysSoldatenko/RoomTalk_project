@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, render
 
 from core.models import Room, Message, Topic, User
-from .forms import UserRegistrationForm, RoomForm
+from .forms import UserRegistrationForm, RoomForm, UserForm
 
 
 def login_view(request):
@@ -169,4 +169,13 @@ def user_profile(request, pk):
 
 @login_required(login_url='login')
 def update_user(request):
-    return None
+    user = request.user
+    form = UserForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile', pk=user.id)
+
+    return render(request, 'core/page_user_update.html', {'form': form})
