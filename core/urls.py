@@ -18,6 +18,6 @@ urlpatterns = [
     path('user-profile/<str:pk>/', views.user_profile, name="user-profile"),
     path('user-update/', views.update_user, name="user-update"),
 
-    # path('topics/', views.topicsPage, name="topics"),
+    path('topics/', views.topics_page, name="topics"),
     # path('activity/', views.activityPage, name="activity"),
 ]

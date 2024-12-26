@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect, render
@@ -51,17 +52,17 @@ def register_view(request):
 
 
 def home_view(request):
-    topics = Topic.objects.all()[:5]
-    rooms = Room.objects.all()
-    room_count = rooms.count()
-    room_messages = Message.objects.all()[:3]
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
 
-    context = {
-        'rooms': rooms,
-        'topics': topics,
-        'room_count': room_count,
-        'room_messages': room_messages
-    }
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) | Q(name__icontains=q) | Q(description__icontains=q)
+    ).select_related('host', 'topic').all()
+
+    topics = Topic.objects.all()[0:5]
+    room_count = rooms.count()
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))[0:3]
+
+    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count, 'room_messages': room_messages}
 
     return render(request, 'core/page_home.html', context)
 
@@ -179,3 +180,9 @@ def update_user(request):
             return redirect('user-profile', pk=user.id)
 
     return render(request, 'core/page_user_update.html', {'form': form})
+
+
+def topics_page(request):
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
+    topics = Topic.objects.filter(name__icontains=q)
+    return render(request, 'core/page_topics.html', {'topics': topics})
