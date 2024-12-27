@@ -19,5 +19,5 @@ urlpatterns = [
     path('user-update/', views.update_user, name="user-update"),
 
     path('topics/', views.topics_page, name="topics"),
-    # path('activity/', views.activityPage, name="activity"),
+    path('activity/', views.activity_page, name="activity"),
 ]

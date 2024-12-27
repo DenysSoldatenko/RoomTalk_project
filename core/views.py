@@ -186,3 +186,8 @@ def topics_page(request):
     q = request.GET.get('q') if request.GET.get('q') is not None else ''
     topics = Topic.objects.filter(name__icontains=q)
     return render(request, 'core/page_topics.html', {'topics': topics})
+
+
+def activity_page(request):
+    room_messages = Message.objects.all()
+    return render(request, 'core/page_activity.html', {'room_messages': room_messages})
