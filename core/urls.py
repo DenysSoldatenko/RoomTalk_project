@@ -9,8 +9,8 @@ urlpatterns = [
     path('', views.home_view, name="home"),
 
     path('room/<slug:room_slug>/', views.room_view, name="room"),
-    path('room-create/', views.create_room, name="room-create"),
-    path('room-update/<slug:room_slug>/', views.update_room, name="room-update"),
+    path('room-create/', views.create_or_update_room, name="room-create"),
+    path('room-update/<slug:room_slug>/', views.create_or_update_room, name="room-update"),
     path('room-delete/<slug:room_slug>/', views.delete_room, name="room-delete"),
 
     path('message-delete/<str:pk>/', views.delete_message, name="message-delete"),

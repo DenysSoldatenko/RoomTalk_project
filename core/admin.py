@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import User, Topic, Room, Message
 
+
 @admin.register(User)
 class ProjectUserAdmin(admin.ModelAdmin):
     list_display = ('email', 'username', 'name', 'is_staff', 'is_active', 'date_joined')
@@ -9,11 +10,13 @@ class ProjectUserAdmin(admin.ModelAdmin):
     ordering = ('-date_joined',)
     readonly_fields = ('last_login', 'date_joined')
 
+
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
     ordering = ('name',)
+
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
@@ -22,6 +25,7 @@ class RoomAdmin(admin.ModelAdmin):
     list_filter = ('host', 'topic')
     ordering = ('-created',)
     filter_horizontal = ('participants',)
+
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
