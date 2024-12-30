@@ -1,0 +1,39 @@
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  app:
+    build: .
+    container_name: room_talk_project
+    command: ["bash", "-c", "python manage.py migrate && python manage.py populate_fake_data && python manage.py runserver 0.0.0.0:8000"]
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_HOST: postgres
+
+  postgres:
+    image: postgres:15.1-alpine
+    container_name: postgres
+    networks:
+      - app-network
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
